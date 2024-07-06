@@ -271,6 +271,7 @@ create(char *path, short type, short major, short minor)
   ip->major = major;
   ip->minor = minor;
   ip->nlink = 1;
+  ip->mod = 0b110;
   iupdate(ip);
 
   if(type == T_DIR){  // Create . and .. entries.
