@@ -192,6 +192,7 @@ winode(uint inum, struct dinode *ip)
   rsect(bn, buf);
   dip = ((struct dinode*)buf) + (inum % IPB);
   *dip = *ip;
+  printf("confirm inode mod:%d\n, inum:%d\n", ip->mod, inum);
   wsect(bn, buf);
 }
 
@@ -228,6 +229,7 @@ ialloc(ushort type)
   din.nlink = xshort(1);
   din.size = xint(0);
   din.mod = 0b101;
+  printf("ialloc: set mod:%d, num:%d\n",din.mod,inum);
   winode(inum, &din);
   return inum;
 }

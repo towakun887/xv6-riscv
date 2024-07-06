@@ -22,9 +22,15 @@ fmtname(char *path)
   return buf;
 }
 
-int
-modrwx(uint8 m){
-  return m;
+char
+*modrwx(short m){
+  if(m == 0b111) return "rwx";
+  if(m == 0b101) return "r-x";
+  if(m == 0b110) return "rw-";
+  if(m == 0b100) return "r--";
+  // char ret[1];
+  // sprintf(ret,"%d",m);
+  return "---";
 }
 
 void
@@ -45,11 +51,12 @@ ls(char *path)
     close(fd);
     return;
   }
+  printf("ls: stat->mod: %d\n",st.mod);
 
   switch(st.type){
   case T_DEVICE:
   case T_FILE:
-    printf("%s %d %d %d %l\n", modrwx(st.mod), fmtname(path), st.type, st.ino, st.size);
+    printf("%s %s %d %d %l\n", modrwx(st.mod), fmtname(path), st.type, st.ino, st.size);
     break;
 
   case T_DIR:
@@ -69,7 +76,7 @@ ls(char *path)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      printf("%s %d %d %d %d\n", modrwx(st.mod), fmtname(buf), st.type, st.ino, st.size);
+      printf("%d %s %d %d %d\n", st.mod, fmtname(buf), st.type, st.ino, st.size);
     }
     break;
   }

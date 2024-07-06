@@ -272,6 +272,7 @@ create(char *path, short type, short major, short minor)
   ip->minor = minor;
   ip->nlink = 1;
   ip->mod = 0b110;
+  printf("create: set mod:%d\n",ip->mod);
   iupdate(ip);
 
   if(type == T_DIR){  // Create . and .. entries.
@@ -502,5 +503,32 @@ sys_pipe(void)
     fileclose(wf);
     return -1;
   }
+  return 0;
+}
+
+uint64
+sys_chmod(void)
+{
+  char path[MAXPATH];
+  int mode;
+  struct inode *ip;
+
+  argint(1, &mode);
+  if(argstr(0, path, MAXPATH) < 0)
+    return -1;
+
+  begin_op();
+
+  if ((ip = namei(path)) == 0) {
+    end_op();
+    return -1;
+  }
+
+  ilock(ip);
+  ip->mod = mode;
+  iupdate(ip);
+  iunlock(ip);
+
+  end_op();
   return 0;
 }
