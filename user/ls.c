@@ -22,15 +22,34 @@ fmtname(char *path)
   return buf;
 }
 
-char
-*modrwx(short m){
+char* short_to_str(ushort num) {
+    static char buf[6]; 
+    int i = 0;
+    do {
+        buf[i++] = num % 10 + '0';
+        num /= 10;
+    } while (num > 0);
+    
+    buf[i] = '\0';
+
+    // 文字列を逆順にする
+    int len = i;
+    for (int j = 0; j < len / 2; j++) {
+        char temp = buf[j];
+        buf[j] = buf[len - j - 1];
+        buf[len - j - 1] = temp;
+    }
+
+    return buf;
+}
+
+char*
+modrwx(short m){
   if(m == 0b111) return "rwx";
   if(m == 0b101) return "r-x";
   if(m == 0b110) return "rw-";
   if(m == 0b100) return "r--";
-  // char ret[1];
-  // sprintf(ret,"%d",m);
-  return "---";
+  return short_to_str(m);
 }
 
 void
@@ -76,7 +95,7 @@ ls(char *path)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      printf("%d %s %d %d %d\n", st.mod, fmtname(buf), st.type, st.ino, st.size);
+      printf("%s %s %d %d %d\n", modrwx(st.mod), fmtname(buf), st.type, st.ino, st.size);
     }
     break;
   }

@@ -156,7 +156,11 @@ main(int argc, char *argv[])
 
     while((cc = read(fd, buf, sizeof(buf))) > 0)
       iappend(inum, buf, cc);
+    struct dinode confdin;
 
+    rinode(inum,&confdin);
+    printf("Confirm: kernelfile: %s: inum: %d, mode: %d\n",shortname,inum,confdin.mod);
+    
     close(fd);
   }
 
@@ -192,7 +196,6 @@ winode(uint inum, struct dinode *ip)
   rsect(bn, buf);
   dip = ((struct dinode*)buf) + (inum % IPB);
   *dip = *ip;
-  printf("confirm inode mod:%d\n, inum:%d\n", ip->mod, inum);
   wsect(bn, buf);
 }
 
@@ -228,7 +231,11 @@ ialloc(ushort type)
   din.type = xshort(type);
   din.nlink = xshort(1);
   din.size = xint(0);
-  din.mod = 0b101;
+  if(type == T_DIR || type == T_DEVICE) {
+    din.mod = xshort(0b110);
+  }else{
+    din.mod = xshort(0b101);
+  }
   printf("ialloc: set mod:%d, num:%d\n",din.mod,inum);
   winode(inum, &din);
   return inum;
@@ -264,7 +271,6 @@ iappend(uint inum, void *xp, int n)
 
   rinode(inum, &din);
   off = xint(din.size);
-  // printf("append inum %d at off %d sz %d\n", inum, off, n);
   while(n > 0){
     fbn = off / BSIZE;
     assert(fbn < MAXFILE);

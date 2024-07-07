@@ -6,6 +6,9 @@
 #include "proc.h"
 #include "defs.h"
 #include "elf.h"
+#include "fs.h"
+#include "sleeplock.h"
+#include "file.h"
 
 static int loadseg(pde_t *, uint64, struct inode *, uint, uint);
 
@@ -36,6 +39,15 @@ exec(char *path, char **argv)
   if((ip = namei(path)) == 0){
     end_op();
     return -1;
+  }
+  
+  printf("exec: program:%s, Permission:%d\n",path,ip->mod);
+  if(ip->mod != 0){
+  if(ip->mod != 0b101 && ip->mod != 0b111){
+    end_op();
+    printf("exec: Permission denied.\n");
+    return -1;
+  }
   }
   ilock(ip);
 
