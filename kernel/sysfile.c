@@ -360,19 +360,20 @@ sys_open(void)
   }
   f->ip = ip;
   f->readable = !(omode & O_WRONLY);
+  
   if(omode & O_WRONLY || omode & O_RDWR){
     short fmod = ip->mod;
     if(((fmod >> 1) & 1) == 1){
       f->writable = (omode & O_WRONLY) || (omode & O_RDWR);
     }else{
-      if(f)
-        fileclose(f);
-      iunlockput(ip);
+      f->writable = 0;
+      iunlock(ip);
       end_op();
       printf("open: Permission denied.\n");
       return -1;
     }
   }
+  
 
   if((omode & O_TRUNC) && ip->type == T_FILE){
     itrunc(ip);
@@ -537,7 +538,7 @@ sys_chmod(void)
   }
 
   ilock(ip);
-  ip->mod = mode;
+  ip->mod = (short)mode;
   iupdate(ip);
   iunlock(ip);
 

@@ -22,7 +22,8 @@ fmtname(char *path)
   return buf;
 }
 
-char* short_to_str(ushort num) {
+/*
+char* short_to_str(short num) {
     static char buf[6]; 
     int i = 0;
     do {
@@ -42,6 +43,7 @@ char* short_to_str(ushort num) {
 
     return buf;
 }
+*/
 
 char*
 modrwx(short m){
@@ -49,7 +51,8 @@ modrwx(short m){
   if(m == 0b101) return "r-x";
   if(m == 0b110) return "rw-";
   if(m == 0b100) return "r--";
-  return short_to_str(m);
+  return "---";
+  // return short_to_str(m);
 }
 
 void
@@ -75,7 +78,7 @@ ls(char *path)
   switch(st.type){
   case T_DEVICE:
   case T_FILE:
-    printf("%s %s %d %d %l\n", modrwx(st.mod), fmtname(path), st.type, st.ino, st.size);
+    printf("%d:%s %s %d %d %l\n", st.mod, modrwx(st.mod), fmtname(path), st.type, st.ino, st.size);
     break;
 
   case T_DIR:
@@ -95,7 +98,7 @@ ls(char *path)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      printf("%s %s %d %d %d\n", modrwx(st.mod), fmtname(buf), st.type, st.ino, st.size);
+      printf("%d:%s %s %d %d %d\n", st.mod, modrwx(st.mod), fmtname(buf), st.type, st.ino, st.size);
     }
     break;
   }

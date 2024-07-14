@@ -6,9 +6,6 @@
 #include "proc.h"
 #include "defs.h"
 #include "elf.h"
-#include "fs.h"
-#include "sleeplock.h"
-#include "file.h"
 
 static int loadseg(pde_t *, uint64, struct inode *, uint, uint);
 
@@ -41,16 +38,26 @@ exec(char *path, char **argv)
     return -1;
   }
   
-  printf("exec: program:%s, Permission:%d\n",path,ip->mod);
-  if(ip->mod != 0){
-  if(ip->mod != 0b101 && ip->mod != 0b111){
-    end_op();
-    printf("exec: Permission denied.\n");
-    return -1;
-  }
-  }
   ilock(ip);
 
+  //get mode from inode and checking permission
+  short mode;
+  if(readi(ip, 0, (uint64)&mode, 0, 1) == 0){
+    printf("readi by exec: failed to open mode of inode\n");
+    mode = 0;
+  }
+  short modb = mode;
+  short modx = modb & 1;
+  short modw = (modb >> 1) & 1;
+  short modr = (modb >> 1) & 1;
+  printf("exec: program:%s, Permission:0b%d%d%d\n",path,modr,modw,modx);
+  if(mode != 0){
+    if((mode & 1) != 1){
+      printf("exec: Permission denied.\n");
+      goto bad;
+    }
+  }
+  
   // Check ELF header
   if(readi(ip, 0, (uint64)&elf, 0, sizeof(elf)) != sizeof(elf))
     goto bad;
