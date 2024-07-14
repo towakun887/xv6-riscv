@@ -42,16 +42,13 @@ exec(char *path, char **argv)
 
   //get mode from inode and checking permission
   short mode;
-  if(readi(ip, 0, (uint64)&mode, 0, 1) == 0){
+  if(readi(ip, 0, (uint64)&mode, 8, 2) == 0){
     printf("readi by exec: failed to open mode of inode\n");
     mode = 0;
   }
-  short modb = mode;
-  short modx = modb & 1;
-  short modw = (modb >> 1) & 1;
-  short modr = (modb >> 1) & 1;
-  printf("exec: program:%s, Permission:0b%d%d%d\n",path,modr,modw,modx);
-  if(mode != 0){
+  
+  printf("exec: program:%s, Permission:%d\n",path,mode);
+  if(mode != 0 /*&& strncmp(path, "/init",5)!=0 && strncmp(path, "sh",3)!=0 && strncmp(path, "ls",3)!=0*/){
     if((mode & 1) != 1){
       printf("exec: Permission denied.\n");
       goto bad;

@@ -7,6 +7,6 @@ struct stat {
   uint ino;    // Inode number
   short type;  // Type of file
   short nlink; // Number of links to file
-  uint64 size; // Size of file in bytes
   short mod;
+  uint64 size; // Size of file in bytes
 };
