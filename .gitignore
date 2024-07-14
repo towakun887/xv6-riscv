@@ -17,3 +17,4 @@ user/usys.S
 .gdbinit
 .vscode/*
 .DS_Store
+diffofxv6.command
