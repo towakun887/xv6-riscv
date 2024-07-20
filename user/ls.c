@@ -73,7 +73,7 @@ ls(char *path)
     close(fd);
     return;
   }
-  printf("ls: stat->mod: %d\n",st.mod);
+  // printf("ls: stat->mod: %d\n",st.mod);
 
   switch(st.type){
   case T_DEVICE:

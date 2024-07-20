@@ -272,7 +272,7 @@ create(char *path, short type, short major, short minor)
   ip->minor = minor;
   ip->nlink = 1;
   ip->mod = 0b110;
-  printf("create: set mod:%d\n",ip->mod);
+  printf("create: %s, set mod:%d\n",path,ip->mod);
   iupdate(ip);
 
   if(type == T_DIR){  // Create . and .. entries.
@@ -452,11 +452,32 @@ sys_exec(void)
   char path[MAXPATH], *argv[MAXARG];
   int i;
   uint64 uargv, uarg;
+  struct inode *ip;
 
   argaddr(1, &uargv);
   if(argstr(0, path, MAXPATH) < 0) {
     return -1;
   }
+
+  
+  begin_op();
+  if((ip = namei(path)) == 0) {
+    return -1;
+  }
+  ilock(ip);
+
+  short fmod = ip->mod;
+  printf("exec: program:%s, Permission:%d\n",path,fmod);
+  if((fmod & 1) != 1) {
+    iunlock(ip);
+    end_op();
+    printf("exec: Permission denied.\n");
+    return -1;
+  }
+  iunlock(ip);
+  end_op();
+  
+
   memset(argv, 0, sizeof(argv));
   for(i=0;; i++){
     if(i >= NELEM(argv)){
