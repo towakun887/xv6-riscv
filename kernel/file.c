@@ -93,7 +93,6 @@ filestat(struct file *f, uint64 addr)
   if(f->type == FD_INODE || f->type == FD_DEVICE){
     ilock(f->ip);
     stati(f->ip, &st);
-    // printf("filestat: mod:%d\n",st.mod);
     iunlock(f->ip);
     if(copyout(p->pagetable, addr, (char *)&st, sizeof(st)) < 0)
       return -1;

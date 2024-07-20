@@ -10,6 +10,12 @@ main(int argc, char *argv[])
     exit(0);
   }
 
+  int mode = atoi(argv[1]);
+  if(mode < 4 || 7 < mode){
+    printf("chmod: Invalid file mode: %d\n",mode);
+    exit(0);
+  }
+
   if(chmod(argv[2],atoi(argv[1]))<0){
     printf("chmod: failed\n");
   }else{

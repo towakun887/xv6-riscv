@@ -159,7 +159,6 @@ main(int argc, char *argv[])
     struct dinode confdin;
 
     rinode(inum,&confdin);
-    printf("Confirm: kernelfile: %s: inum: %d, mode: %d\n",shortname,inum,confdin.mod);
     
     close(fd);
   }

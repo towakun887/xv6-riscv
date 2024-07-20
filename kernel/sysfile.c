@@ -272,7 +272,6 @@ create(char *path, short type, short major, short minor)
   ip->minor = minor;
   ip->nlink = 1;
   ip->mod = 0b110;
-  printf("create: %s, set mod:%d\n",path,ip->mod);
   iupdate(ip);
 
   if(type == T_DIR){  // Create . and .. entries.
@@ -467,7 +466,6 @@ sys_exec(void)
   ilock(ip);
 
   short fmod = ip->mod;
-  printf("exec: program:%s, Permission:%d\n",path,fmod);
   if((fmod & 1) != 1) {
     iunlock(ip);
     end_op();
@@ -549,6 +547,9 @@ sys_chmod(void)
 
   argint(1, &mode);
   if(argstr(0, path, MAXPATH) < 0)
+    return -1;
+
+  if(mode < 4 || 7 < mode)
     return -1;
 
   begin_op();

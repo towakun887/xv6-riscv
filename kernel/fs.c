@@ -465,7 +465,6 @@ stati(struct inode *ip, struct stat *st)
   st->nlink = ip->nlink;
   st->mod = ip->mod;
   st->size = ip->size;
-  // printf("stati mod:inode %d->stat %d\n",ip->mod,st->mod);
 }
 
 // Read data from inode.

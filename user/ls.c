@@ -22,37 +22,14 @@ fmtname(char *path)
   return buf;
 }
 
-/*
-char* short_to_str(short num) {
-    static char buf[6]; 
-    int i = 0;
-    do {
-        buf[i++] = num % 10 + '0';
-        num /= 10;
-    } while (num > 0);
-    
-    buf[i] = '\0';
-
-    // 文字列を逆順にする
-    int len = i;
-    for (int j = 0; j < len / 2; j++) {
-        char temp = buf[j];
-        buf[j] = buf[len - j - 1];
-        buf[len - j - 1] = temp;
-    }
-
-    return buf;
-}
-*/
-
 char*
-modrwx(short m){
-  if(m == 0b111) return "rwx";
-  if(m == 0b101) return "r-x";
-  if(m == 0b110) return "rw-";
-  if(m == 0b100) return "r--";
-  return "---";
-  // return short_to_str(m);
+getrwx(short m){
+  static char rwx[3];
+  rwx[0] = ((m >> 2) & 1) == 1 ? 'r' : '-';
+  rwx[1] = ((m >> 1) & 1) == 1 ? 'w' : '-';
+  rwx[2] = (m & 1) == 1 ? 'x' : '-';
+  rwx[3] = '\0';
+  return rwx;
 }
 
 void
@@ -73,12 +50,11 @@ ls(char *path)
     close(fd);
     return;
   }
-  // printf("ls: stat->mod: %d\n",st.mod);
 
   switch(st.type){
   case T_DEVICE:
   case T_FILE:
-    printf("%d:%s %s %d %d %l\n", st.mod, modrwx(st.mod), fmtname(path), st.type, st.ino, st.size);
+    printf("%s %s %d %d %l\n", getrwx(st.mod), fmtname(path), st.type, st.ino, st.size);
     break;
 
   case T_DIR:
@@ -98,7 +74,7 @@ ls(char *path)
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      printf("%d:%s %s %d %d %d\n", st.mod, modrwx(st.mod), fmtname(buf), st.type, st.ino, st.size);
+      printf("%s %s %d %d %d\n", getrwx(st.mod), fmtname(buf), st.type, st.ino, st.size);
     }
     break;
   }
