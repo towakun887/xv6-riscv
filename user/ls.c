@@ -24,7 +24,7 @@ fmtname(char *path)
 
 char*
 getrwx(short m){
-  static char rwx[3];
+  static char rwx[4];
   rwx[0] = ((m >> 2) & 1) == 1 ? 'r' : '-';
   rwx[1] = ((m >> 1) & 1) == 1 ? 'w' : '-';
   rwx[2] = (m & 1) == 1 ? 'x' : '-';

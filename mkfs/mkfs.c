@@ -156,10 +156,7 @@ main(int argc, char *argv[])
 
     while((cc = read(fd, buf, sizeof(buf))) > 0)
       iappend(inum, buf, cc);
-    struct dinode confdin;
 
-    rinode(inum,&confdin);
-    
     close(fd);
   }
 
@@ -235,7 +232,7 @@ ialloc(ushort type)
   }else{
     din.mod = xshort(0b101);
   }
-  printf("ialloc: set mod:%d, num:%d\n",din.mod,inum);
+  // printf("ialloc: set mod:%d, num:%d\n",din.mod,inum);
   winode(inum, &din);
   return inum;
 }
@@ -270,6 +267,7 @@ iappend(uint inum, void *xp, int n)
 
   rinode(inum, &din);
   off = xint(din.size);
+  // printf("append inum %d at off %d sz %d\n", inum, off, n);
   while(n > 0){
     fbn = off / BSIZE;
     assert(fbn < MAXFILE);

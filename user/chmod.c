@@ -4,7 +4,7 @@
 
 char*
 getrwx(short m){
-  static char rwx[3];
+  static char rwx[4];
   rwx[0] = ((m >> 2) & 1) == 1 ? 'r' : '-';
   rwx[1] = ((m >> 1) & 1) == 1 ? 'w' : '-';
   rwx[2] = (m & 1) == 1 ? 'x' : '-';
@@ -56,7 +56,7 @@ main(int argc, char *argv[])
     }
 
     //common message
-    printf("chmod: sucess: mode of %s has been changed to %s",argv[2],getrwx(st.mod));
+    printf("chmod: success: mode of %s has been changed to %s",argv[2],getrwx(st.mod));
     if(befmod != 0){ //if there is chached old mode
       printf(" from %s\n",getrwx(befmod));
     }else{
